@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Race4Kids 2026 – Anmeldungen</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+}
+
+header {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+h1 {
+    font-size: 3em;
+    margin: 0;
+}
+
+.subtitle {
+    opacity: 0.8;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+.class-box {
+    background: rgba(255,255,255,0.08);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 40px;
+}
+
+.class-title {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+.counter {
+    opacity: 0.7;
+    margin-bottom: 20px;
+}
+
+.entry {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.timestamp {
+    font-size: 0.8em;
+    opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Race4Kids 2026</h1>
+<div class="subtitle">Offizielle Anmeldeliste</div>
+</header>
+
+<div class="container">
+
+<div class="class-box">
+<div class="class-title">🔴 GTP Klasse</div>
+<div class="counter" id="gtpCount">Lade...</div>
+<div id="gtpList"></div>
+</div>
+
+<div class="class-box">
+<div class="class-title">🔵 GT3 Klasse</div>
+<div class="counter" id="gt3Count">Lade...</div>
+<div id="gt3List"></div>
+</div>
+
+</div>
+
+<script>
+
+// HIER DEINEN CSV LINK EINSETZEN
+const sheetURL = "HIER_DEIN_CSV_LINK";
+
+fetch(sheetURL)
+.then(response => response.text())
+.then(data => {
+
+    const rows = data.split("\n").slice(1);
+
+    let gtpHTML = "";
+    let gt3HTML = "";
+
+    rows.forEach(row => {
+        const cols = row.split(",");
+
+        const timestamp = cols[0];
+        const klasse = cols[1];
+        const team = cols[2];
+        const discord = cols[3];
+        const fahrzeug = cols[4];
+        const nummer = cols[5];
+
+        if (!team) return;
+
+        const entry = `
+        <div class="entry">
+            <strong>#${nummer} – ${team}</strong><br>
+            ${fahrzeug}<br>
+            Discord: ${discord}<br>
+            <div class="timestamp">Angemeldet am ${timestamp}</div>
+        </div>
+        `;
+
+        if (klasse.includes("GTP")) {
+            gtpHTML += entry;
+        } else if (klasse.includes("GT3") || klasse.includes("GTD")) {
+            gt3HTML += entry;
+        }
+    });
+
+    document.getElementById("gtpList").innerHTML = gtpHTML;
+    document.getElementById("gt3List").innerHTML = gt3HTML;
+
+    document.getElementById("gtpCount").innerText =
+        gtpHTML ? gtpHTML.match(/entry/g).length + " Anmeldungen" : "0 Anmeldungen";
+
+    document.getElementById("gt3Count").innerText =
+        gt3HTML ? gt3HTML.match(/entry/g).length + " Anmeldungen" : "0 Anmeldungen";
+
+});
+
+</script>
+
+</body>
+</html>
